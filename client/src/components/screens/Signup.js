@@ -38,6 +38,9 @@ const Signup = () => {
 					M.toast({ html: data.message, classes: "#43a047 green darken-1" });
 					history.push("/signin");
 				}
+			})
+			.catch((err) => {
+				console.log(err);
 			});
 	};
 
