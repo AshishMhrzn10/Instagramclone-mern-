@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { UserContext } from "../../App";
 
 const Profile = () => {
+	const [mypics, setPics] = useState([]);
+	const { state, dispatch } = useContext(UserContext);
+
+	useEffect(() => {
+		fetch("/mypost", {
+			headers: {
+				Authorization: "Bearer " + localStorage.getItem("jwt"),
+			},
+		})
+			.then((res) => res.json())
+			.then((result) => {
+				setPics(result.mypost);
+			});
+	}, []);
+
 	return (
 		<div style={{ maxWidth: "550px", margin: "0px auto" }}>
 			<div
@@ -19,7 +35,7 @@ const Profile = () => {
 					/>
 				</div>
 				<div>
-					<h4>John Doe</h4>
+					<h4>{state ? state.name : "loading"}</h4>
 					<div
 						style={{
 							display: "flex",
@@ -35,26 +51,16 @@ const Profile = () => {
 			</div>
 
 			<div className="gallery">
-				<img
-					className="item"
-					src="https://images.unsplash.com/photo-1549845375-ce0a0ba8288c?ixid=MXwxMjA3fDB8MHxzZWFyY2h8N3x8dXNlciUyMGljb258ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-					alt=""
-				/>
-				<img
-					className="item"
-					src="https://images.unsplash.com/photo-1549845375-ce0a0ba8288c?ixid=MXwxMjA3fDB8MHxzZWFyY2h8N3x8dXNlciUyMGljb258ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-					alt=""
-				/>
-				<img
-					className="item"
-					src="https://images.unsplash.com/photo-1549845375-ce0a0ba8288c?ixid=MXwxMjA3fDB8MHxzZWFyY2h8N3x8dXNlciUyMGljb258ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-					alt=""
-				/>
-				<img
-					className="item"
-					src="https://images.unsplash.com/photo-1549845375-ce0a0ba8288c?ixid=MXwxMjA3fDB8MHxzZWFyY2h8N3x8dXNlciUyMGljb258ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-					alt=""
-				/>
+				{mypics.map((item) => {
+					return (
+						<img
+							key={item._id}
+							className="item"
+							src={item.photo}
+							alt={item.title}
+						/>
+					);
+				})}
 			</div>
 		</div>
 	);
