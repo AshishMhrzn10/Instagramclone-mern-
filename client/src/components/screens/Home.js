@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../App";
+import M from "materialize-css";
 
 const Home = () => {
 	const [data, setData] = useState([]);
@@ -85,7 +86,6 @@ const Home = () => {
 		})
 			.then((res) => res.json())
 			.then((result) => {
-				console.log(result);
 				const newData = data.map((item) => {
 					if (item._id == result._id) {
 						return result;
@@ -100,12 +100,67 @@ const Home = () => {
 			});
 	};
 
+	const deletePost = (postid) => {
+		fetch(`/deletepost/${postid}`, {
+			method: "delete",
+			headers: {
+				Authorization: "Bearer " + localStorage.getItem("jwt"),
+			},
+		})
+			.then((res) => res.json())
+			.then((result) => {
+				M.toast({
+					html: "Post deleted successfully",
+					classes: "#43a047 green darken-1",
+				});
+				const newData = data.filter((item) => {
+					return item._id !== result._id;
+				});
+				setData(newData);
+			});
+	};
+
+	const deleteComment = (postId, commentId) => {
+		fetch(`/deletecomment/${postId}/${commentId}`, {
+			method: "delete",
+			headers: {
+				Authorization: "Bearer " + localStorage.getItem("jwt"),
+			},
+		})
+			.then((res) => res.json())
+			.then((result) => {
+				const newData = data.map((item) => {
+					if (item._id === result._id) {
+						return result;
+					} else {
+						return item;
+					}
+				});
+				setData(newData);
+				M.toast({
+					html: "Comment deleted successfully",
+					classes: "#43a047 green darken-1",
+				});
+			});
+	};
+
 	return (
 		<div className="home">
 			{data.map((item) => {
 				return (
 					<div className="card home-card" key={item._id}>
-						<h5>{item.postedBy.name}</h5>
+						<h5>
+							{item.postedBy.name}
+							{item.postedBy._id === state._id && (
+								<i
+									className="material-icons"
+									style={{ float: "right" }}
+									onClick={() => deletePost(item._id)}
+								>
+									delete
+								</i>
+							)}
+						</h5>
 						<div className="card-image">
 							<img src={item.photo} alt="" />
 						</div>
@@ -139,6 +194,15 @@ const Home = () => {
 											{record.postedBy.name}
 										</span>{" "}
 										{record.text}
+										{record.postedBy._id === state._id && (
+											<i
+												className="material-icons"
+												style={{ float: "right" }}
+												onClick={() => deleteComment(item._id, record._id)}
+											>
+												delete
+											</i>
+										)}
 									</h6>
 								);
 							})}

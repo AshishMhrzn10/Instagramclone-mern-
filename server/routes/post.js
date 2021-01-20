@@ -110,4 +110,47 @@ router.put("/comment", requireLogin, (req, res) => {
 		});
 });
 
+router.delete("/deletepost/:postId", requireLogin, (req, res) => {
+	Post.findOne({ _id: req.params.postId })
+		.populate("postedBy", "_id")
+		.exec((err, post) => {
+			if (err || !post) {
+				return res.status(422).json({ error: err });
+			}
+			if (post.postedBy._id.toString() === req.user._id.toString()) {
+				post
+					.remove()
+					.then((result) => {
+						res.json(result);
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			}
+		});
+});
+
+router.delete("/deletecomment/:postId/:commentId", requireLogin, (req, res) => {
+	const comment = { _id: req.params.commentId };
+	Post.findByIdAndUpdate(
+		req.params.postId,
+		{
+			$pull: { comments: comment },
+		},
+		{
+			new: true,
+		}
+	)
+		.populate("comments.postedBy", "_id name")
+		.populate("postedBy", "_id name ")
+		.exec((err, postComment) => {
+			if (err || !postComment) {
+				return res.status(422).json({ error: err });
+			} else {
+				const result = postComment;
+				res.json(result);
+			}
+		});
+});
+
 module.exports = router;
