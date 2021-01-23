@@ -23,7 +23,7 @@ router.get("/user/:id", requireLogin, (req, res) => {
 		});
 });
 
-router.put("follow", requireLogin, (req, res) => {
+router.put("/follow", requireLogin, (req, res) => {
 	User.findByIdAndUpdate(
 		req.body.followId,
 		{
@@ -41,6 +41,7 @@ router.put("follow", requireLogin, (req, res) => {
 				},
 				{ new: true }
 			)
+				.select("-password")
 				.then((result) => {
 					res.json(result);
 				})
@@ -51,7 +52,7 @@ router.put("follow", requireLogin, (req, res) => {
 	);
 });
 
-router.put("unfollow", requireLogin, (req, res) => {
+router.put("/unfollow", requireLogin, (req, res) => {
 	User.findByIdAndUpdate(
 		req.body.unfollowId,
 		{
@@ -69,6 +70,7 @@ router.put("unfollow", requireLogin, (req, res) => {
 				},
 				{ new: true }
 			)
+				.select("-password")
 				.then((result) => {
 					res.json(result);
 				})
