@@ -56,13 +56,13 @@ const Signin = () => {
 				<h2>Instagram</h2>
 				<input
 					type="text"
-					placeholder="email"
+					placeholder="Email"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
 				/>
 				<input
 					type="password"
-					placeholder="password"
+					placeholder="Password"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
 				/>
