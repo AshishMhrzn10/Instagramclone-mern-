@@ -75,6 +75,9 @@ const Signin = () => {
 				<h5>
 					<Link to="/signup">Not signed up yet?</Link>
 				</h5>
+				<h6>
+					<Link to="/reset">Forgot password?</Link>
+				</h6>
 			</div>
 		</div>
 	);
