@@ -6,6 +6,7 @@ import M from "materialize-css";
 const NavBar = () => {
 	const searchModal = useRef(null);
 	const [search, setSearch] = useState("");
+	const [userDetails, setUserDetails] = useState([]);
 	const { state, dispatch } = useContext(UserContext);
 	const history = useHistory();
 
@@ -62,6 +63,23 @@ const NavBar = () => {
 		}
 	};
 
+	const fetchUsers = (query) => {
+		setSearch(query);
+		fetch("/search-users", {
+			method: "post",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				query,
+			}),
+		})
+			.then((res) => res.json())
+			.then((results) => {
+				setUserDetails(results.user);
+			});
+	};
+
 	return (
 		<div className="navbar-fixed">
 			<nav>
@@ -85,18 +103,37 @@ const NavBar = () => {
 							type="text"
 							placeholder="Search user"
 							value={search}
-							onChange={(e) => setSearch(e.target.value)}
+							onChange={(e) => fetchUsers(e.target.value)}
 						/>
 						<ul className="collection" style={{ display: "grid" }}>
-							<li className="collection-item">Alvin</li>
-							<li className="collection-item">Alvin</li>
-							<li className="collection-item">Alvin</li>
-							<li className="collection-item">Alvin</li>
+							{userDetails.map((item) => {
+								return (
+									<Link
+										key={item._id}
+										to={
+											item._id !== state._id
+												? "/profile/" + item._id
+												: "/profile"
+										}
+										onClick={() => {
+											M.Modal.getInstance(searchModal.current).close();
+											setSearch("");
+										}}
+									>
+										<li key={item._id} className="collection-item">
+											{item.email}
+										</li>
+									</Link>
+								);
+							})}
 						</ul>
 					</div>
 					<div className="modal-footer">
-						<button className="modal-close waves-effect waves-green btn-flat">
-							Agree
+						<button
+							className="modal-close waves-effect waves-green btn-flat"
+							onClick={() => setSearch("")}
+						>
+							Close
 						</button>
 					</div>
 				</div>
